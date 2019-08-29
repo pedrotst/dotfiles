@@ -8,8 +8,8 @@ You should not put any user code in this function besides modifying the variable
 values."
   (setq-default
    evil-want-abbrev-expand-on-insert-exit nil
-   coq-compile-before-require t
-   company-coq-live-on-the-edge t
+   ;; coq-compile-before-require t
+   ;; company-coq-live-on-the-edge t
    ;; Base distribution to use. This is a layer contained in the directory
    ;; `+distribution'. For now available distributions are `spacemacs-base'
    ;; or `spacemacs'. (default 'spacemacs)
@@ -33,16 +33,25 @@ values."
    dotspacemacs-configuration-layer-path '()
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '(racket
-     cedille-mode
+   '(python
+     yaml
+     coq
+     html
+     racket
+     cedille
      pdf-tools
      boogie-friends
      scala
      haskell
      spell-checking
+     ;; mytex
      latex
      direnv
-     markdown
+     c-c++
+     ;; eldoc
+     agda
+     coq
+     idris
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
      ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
@@ -55,14 +64,23 @@ values."
      ;; git
      markdown
      ;; org
-     ;; (shell :variables
-     ;;        shell-default-height 30
-     ;;        shell-default-position 'bottom)
+     shell
+     jekyll
+     ;; colors
+     gtags
+     ;; (colors :variables colors-enable-nyan-cat-progress-bar t)
+     ;;(setq-default dotspacemacs-configuration-layers
+     ;;'((shell :variables shell-enable-smart-eshell t)))
      ;; spell-checking
      ;; syntax-checking
      ;; version-control
+     (markdown :variables markdown-live-preview-engine 'vmd)
      (spell-checking :variables spell-checking-enable-auto-dictionary t)
-     (spell-checking :variables enable-flyspell-auto-completion t)
+     (spell-checking :variables enable-flyspell-auto-completion nil)
+     ;; (shell :variables shell-default-shell 'bash)
+     ;; (shell :variables shell-enable-smart-eshell t)
+     ;; (shell :variables shell-default-full-span nil)
+     (gtags :variables gtags-enable-by-default t)
      )
      ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
@@ -94,6 +112,7 @@ values."
   ;; This setq-default sexp is an exhaustive list of all the supported
   ;; spacemacs settings.
   (setq-default
+   desktop-save-mode nil
 
    ;; If non nil ELPA repositories are contacted via HTTPS whenever it's
    ;; possible. Set it to nil if you have no way to use HTTPS in your
@@ -140,7 +159,7 @@ values."
    ;; True if the home buffer should respond to resize events.
    dotspacemacs-startup-buffer-responsive t
    ;; Default major mode of the scratch buffer (default `text-mode')
-   dotspacemacs-scratch-mode 'text-mode
+   dotspacemacs-scratch-mode 'emacs-lisp-mode
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
@@ -150,8 +169,8 @@ values."
    dotspacemacs-colorize-cursor-according-to-state t
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
    ;; quickly tweak the mode-line size to make separators look not too crappy.
-   dotspacemacs-default-font '("Source Code Pro"
-                               :size 13
+   dotspacemacs-default-font '("monaco"
+                               :size 18
                                :weight normal
                                :width normal
                                :powerline-scale 1.1)
@@ -238,14 +257,14 @@ values."
    dotspacemacs-loading-progress-bar t
    ;; If non nil the frame is fullscreen when Emacs starts up. (default nil)
    ;; (Emacs 24.4+ only)
-   dotspacemacs-fullscreen-at-startup nil
+   dotspacemacs-fullscreen-at-startup t
    ;; If non nil `spacemacs/toggle-fullscreen' will not use native fullscreen.
    ;; Use to disable fullscreen animations in OSX. (default nil)
-   dotspacemacs-fullscreen-use-non-native nil
+   dotspacemacs-fullscreen-use-non-native t
    ;; If non nil the frame is maximized when Emacs starts up.
    ;; Takes effect only if `dotspacemacs-fullscreen-at-startup' is nil.
    ;; (default nil) (Emacs 24.4+ only)
-   dotspacemacs-maximized-at-startup t
+   dotspacemacs-maximized-at-startup nil
    ;; A value from the range (0..100), in increasing opacity, which describes
    ;; the transparency level of a frame when it's active or selected.
    ;; Transparency can be toggled through `toggle-transparency'. (default 90)
@@ -303,10 +322,12 @@ values."
    )
 
 (defun dotspacemacs/user-init ()
-  (load "~/.emacs.d/lisp/PG/generic/proof-site")
+  ;; (load "~/.emacs.d/lisp/PG/generic/proof-site")
   ;;(load "/Users/pedroabreu/gitprojects/cedille")
   (setq cedille-path "/Users/pedroabreu/gitprojects/cedille")
-        (add-to-list 'load-path cedille-path)
+  (add-to-list 'load-path cedille-path)
+  ;; (add-to-list 'load-path cedille-lib-path)
+  ;; (setq-default dotspacemacs-themes '(list-themes-here))
 
   )
 
@@ -343,10 +364,17 @@ you should place your code here."
   (setq flycheck-inferior-dafny-executable "/usr/local/lib/dafny/dafny-server") ;; Optional
   (setq boogie-friends-profile-analyzer-executable "/usr/local/lib/dafny/z3/Z3-AXIOM-PROFILER") ;; Optional
 
+  ;; set our macros used for the cs240 handouts
+  (evil-set-register ?t [?i ?\{ ?\\ ?t ?t ? escape ?E ?a ?\} escape])
+  (evil-set-register ?r [?i ?\{ ?\\ ?t ?t ? escape ?A ?\} escape])
+  (evil-set-register ?f [?x ?O ?\\ ?b ?e ?g ?i ?n ?\{ ?f ?u ?n ?c ?t ?i ?o ?n ?S
+        ?p ?e ?c ?\} return ?\\ ?e ?n ?d tab ?\{ ?f ?u ?n ?c ?t ?i ?o ?n ?S ?p
+        ?e ?c ?\} escape ?P])
+  ;; (globa-set-key (kbd "C-p") comment-region)
 
-  ;(setq cedille-path "/Users/pedroabreu/gitprojects/cedille")
-  ;(add-to-list 'load-path cedille-path)
-  ;(require 'cedille-mode)
+  ;; (add-hook 'eshell-mode-hook
+            ;#'(lambda ()
+                ;(define-key eshell-mode-map (kbd "M-l")  'helm-eshell-history)))
 
   ;; Do not write anything past this comment. This is where Emacs will
   ;; auto-generate custom variable definitions.
@@ -359,3 +387,50 @@ you should place your code here."
 	   (quote
 	    (pdfgrep pdf-tools flyspell-popup zones boogie-friends magit noflet ensime sbt-mode scala-mode org-evil helm-ispell flyspell-correct-helm rust flyspell-correct auto-dictionary auctex-latexmk auctex with-editor direnv intero flycheck hlint-refactor hindent helm-hoogle haskell-snippets company-ghci company-ghc ghc haskell-mode cmm-mode yasnippet company-math math-symbol-lists company company-coq mmm-mode markdown-toc markdown-mode gh-md helm-themes helm-swoop helm-projectile helm-mode-manager helm-flx helm-descbinds helm-ag ace-jump-helm-line ws-butler winum which-key wgrep volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline smex restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-make helm helm-core google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump popup f dash s diminish define-word counsel-projectile projectile pkg-info epl counsel swiper column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed async aggressive-indent adaptive-wrap ace-window ace-link avy))))
   )
+(defun dotspacemacs/emacs-custom-settings ()
+  "Emacs custom settings.
+This is an auto-generated function, do not modify its content directly, use
+Emacs customize menu instead.
+This function is called at the very end of Spacemacs initialization."
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(ansi-color-names-vector
+   ["#0a0814" "#f2241f" "#67b11d" "#b1951d" "#4f97d7" "#a31db1" "#28def0" "#b2b2b2"])
+ '(custom-safe-themes
+   (quote
+    ("fa2b58bb98b62c3b8cf3b6f02f058ef7827a8e497125de0254f56e373abee088" default)))
+ '(evil-want-Y-yank-to-eol nil)
+ '(hl-todo-keyword-faces
+   (quote
+    (("TODO" . "#dc752f")
+     ("NEXT" . "#dc752f")
+     ("THEM" . "#2d9574")
+     ("PROG" . "#4f97d7")
+     ("OKAY" . "#4f97d7")
+     ("DONT" . "#f2241f")
+     ("FAIL" . "#f2241f")
+     ("DONE" . "#86dc2f")
+     ("NOTE" . "#b1951d")
+     ("KLUDGE" . "#b1951d")
+     ("HACK" . "#b1951d")
+     ("TEMP" . "#b1951d")
+     ("FIXME" . "#dc752f")
+     ("XXX" . "#dc752f")
+     ("XXXX" . "#dc752f")
+     ("???" . "#dc752f"))))
+ '(org-agenda-files (quote ("~/gitprojects/cs546/notes/chapter1.org")))
+ '(package-selected-packages
+   (quote
+    (yaml-mode web-mode web-beautify tagedit slim-mode scss-mode sass-mode pug-mode prettier-js impatient-mode htmlize simple-httpd helm-css-scss haml-mode emmet-mode counsel-css company-web web-completion-data add-node-modules-path markdown-mode+ pdfgrep pdf-tools flyspell-popup zones boogie-friends magit noflet ensime sbt-mode scala-mode org-evil helm-ispell flyspell-correct-helm rust flyspell-correct auto-dictionary auctex-latexmk auctex with-editor direnv intero flycheck hlint-refactor hindent helm-hoogle haskell-snippets company-ghci company-ghc ghc haskell-mode cmm-mode yasnippet company-math math-symbol-lists company company-coq mmm-mode markdown-toc markdown-mode gh-md helm-themes helm-swoop helm-projectile helm-mode-manager helm-flx helm-descbinds helm-ag ace-jump-helm-line ws-butler winum which-key wgrep volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline smex restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-make helm helm-core google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump popup f dash s diminish define-word counsel-projectile projectile pkg-info epl counsel swiper column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed async aggressive-indent adaptive-wrap ace-window ace-link avy)))
+ '(pdf-view-midnight-colors (quote ("#b2b2b2" . "#292b2e"))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
+)
+
